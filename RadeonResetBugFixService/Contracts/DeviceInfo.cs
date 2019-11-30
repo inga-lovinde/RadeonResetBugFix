@@ -8,6 +8,8 @@
 
         public string ClassName { get; set; }
 
+        public string Description => $"{this.Name} ({this.DeviceId}, {this.ClassGuid})";
+
         public string DeviceId { get; set; }
 
         public long? ErrorCode { get; set; }

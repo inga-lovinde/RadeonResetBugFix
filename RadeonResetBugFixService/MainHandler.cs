@@ -11,6 +11,10 @@
     {
         private string LogFilename { get; }
 
+        private DevicesStatus StartupDevicesStatus { get; } = new DevicesStatus();
+
+        private DevicesStatus ShutdownDevicesStatus { get; } = new DevicesStatus();
+
         private object Mutex = new object();
 
         public MainHandler()
@@ -28,15 +32,23 @@
             {
                 using (ILogger logger = new TaskLoggerWrapper(fileLogger, "Startup"))
                 {
-                    lock (this.Mutex)
+                    try
                     {
-                        TasksProcessor.ProcessTasks(
-                            logger,
-                            new ITask[]
-                            {
-                            new DisableVirtualVideoTask(),
-                            new EnableAmdVideoTask(),
-                            });
+                        lock (this.Mutex)
+                        {
+                            TasksProcessor.ProcessTasks(
+                                logger,
+                                new ITask[]
+                                {
+                                    new SleepTask(TimeSpan.FromSeconds(20)),
+                                    new DisableVirtualVideoTask(this.StartupDevicesStatus),
+                                    new EnableAmdVideoTask(this.StartupDevicesStatus),
+                                });
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        logger.LogError(e.ToString());
                     }
                 }
             }
@@ -48,16 +60,24 @@
             {
                 using (ILogger logger = new TaskLoggerWrapper(fileLogger, "Shutdown"))
                 {
-                    lock (this.Mutex)
+                    try
                     {
-                        TasksProcessor.ProcessTasks(
-                            logger,
-                            new ITask[]
-                            {
-                                new StopAudioServiceTask(),
-                                new DisableAmdVideoTask(),
-                                new EnableVirtualVideoTask(),
-                            });
+                        lock (this.Mutex)
+                        {
+                            TasksProcessor.ProcessTasks(
+                                logger,
+                                new ITask[]
+                                {
+                                    new StopAudioServiceTask(),
+                                    new DisableAmdVideoTask(this.ShutdownDevicesStatus),
+                                    new EnableVirtualVideoTask(this.ShutdownDevicesStatus),
+                                    new LastResortDevicesRestoreTask(this.StartupDevicesStatus),
+                                });
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        logger.LogError(e.ToString());
                     }
                 }
             }

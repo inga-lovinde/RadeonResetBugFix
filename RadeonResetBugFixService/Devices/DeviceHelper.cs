@@ -79,5 +79,10 @@
         {
             ThirdParty.DisableDevice.DeviceHelper.SetDeviceEnabled(deviceInfo.ClassGuid, deviceInfo.DeviceId, true);
         }
+
+        public static bool? IsDeviceCurrentlyDisabled(DeviceInfo deviceInfo)
+        {
+            return ThirdParty.DisableDevice.DeviceHelper.IsDeviceDisabled(deviceInfo.ClassGuid, deviceInfo.DeviceId);
+        }
     }
 }

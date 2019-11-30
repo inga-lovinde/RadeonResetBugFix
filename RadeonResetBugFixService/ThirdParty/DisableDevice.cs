@@ -1,6 +1,7 @@
 ﻿namespace RadeonResetBugFixService.ThirdParty.DisableDevice
 {
     // Code taken from https://stackoverflow.com/a/1610140
+    // Code for obtaining device status is mine
 
     using System;
     using System.Text;
@@ -158,6 +159,150 @@
         OnlyValidateViaAuthenticode = unchecked((int)0xe0000245)
     }
 
+    // CR_ return values from Cfgmgr32.h
+    internal enum CmReturnCode : int
+    {
+        CR_SUCCESS = 0x00000000,
+        CR_DEFAULT = 0x00000001,
+        CR_OUT_OF_MEMORY = 0x00000002,
+        CR_INVALID_POINTER = 0x00000003,
+        CR_INVALID_FLAG = 0x00000004,
+        CR_INVALID_DEVNODE = 0x00000005,
+        CR_INVALID_RES_DES = 0x00000006,
+        CR_INVALID_LOG_CONF = 0x00000007,
+        CR_INVALID_ARBITRATOR = 0x00000008,
+        CR_INVALID_NODELIST = 0x00000009,
+        CR_DEVNODE_HAS_REQS = 0x0000000A,
+        CR_INVALID_RESOURCEID = 0x0000000B,
+        CR_DLVXD_NOT_FOUND = 0x0000000C,
+        CR_NO_SUCH_DEVNODE = 0x0000000D,
+        CR_NO_MORE_LOG_CONF = 0x0000000E,
+        CR_NO_MORE_RES_DES = 0x0000000F,
+        CR_ALREADY_SUCH_DEVNODE = 0x00000010,
+        CR_INVALID_RANGE_LIST = 0x00000011,
+        CR_INVALID_RANGE = 0x00000012,
+        CR_FAILURE = 0x00000013,
+        CR_NO_SUCH_LOGICAL_DEV = 0x00000014,
+        CR_CREATE_BLOCKED = 0x00000015,
+        CR_NOT_SYSTEM_VM = 0x00000016,
+        CR_REMOVE_VETOED = 0x00000017,
+        CR_APM_VETOED = 0x00000018,
+        CR_INVALID_LOAD_TYPE = 0x00000019,
+        CR_BUFFER_SMALL = 0x0000001A,
+        CR_NO_ARBITRATOR = 0x0000001B,
+        CR_NO_REGISTRY_HANDLE = 0x0000001C,
+        CR_REGISTRY_ERROR = 0x0000001D,
+        CR_INVALID_DEVICE_ID = 0x0000001E,
+        CR_INVALID_DATA = 0x0000001F,
+        CR_INVALID_API = 0x00000020,
+        CR_DEVLOADER_NOT_READY = 0x00000021,
+        CR_NEED_RESTART = 0x00000022,
+        CR_NO_MORE_HW_PROFILES = 0x00000023,
+        CR_DEVICE_NOT_THERE = 0x00000024,
+        CR_NO_SUCH_VALUE = 0x00000025,
+        CR_WRONG_TYPE = 0x00000026,
+        CR_INVALID_PRIORITY = 0x00000027,
+        CR_NOT_DISABLEABLE = 0x00000028,
+        CR_FREE_RESOURCES = 0x00000029,
+        CR_QUERY_VETOED = 0x0000002A,
+        CR_CANT_SHARE_IRQ = 0x0000002B,
+        CR_NO_DEPENDENT = 0x0000002C,
+        CR_SAME_RESOURCES = 0x0000002D,
+        CR_NO_SUCH_REGISTRY_KEY = 0x0000002E,
+        CR_INVALID_MACHINENAME = 0x0000002F,
+        CR_REMOTE_COMM_FAILURE = 0x00000030,
+        CR_MACHINE_UNAVAILABLE = 0x00000031,
+        CR_NO_CM_SERVICES = 0x00000032,
+        CR_ACCESS_DENIED = 0x00000033,
+        CR_CALL_NOT_IMPLEMENTED = 0x00000034,
+        CR_INVALID_PROPERTY = 0x00000035,
+        CR_DEVICE_INTERFACE_ACTIVE = 0x00000036,
+        CR_NO_SUCH_DEVICE_INTERFACE = 0x00000037,
+        CR_INVALID_REFERENCE_STRING = 0x00000038,
+        CR_INVALID_CONFLICT_LIST = 0x00000039,
+        CR_INVALID_INDEX = 0x0000003A,
+        CR_INVALID_STRUCTURE_SIZE = 0x0000003B,
+    }
+
+        // DN_ flags from Cfg.h
+        [Flags]
+    internal enum CmStatus : ulong
+    {
+        DN_ROOT_ENUMERATED = 0x00000001, /* Was enumerated by ROOT */
+        DN_DRIVER_LOADED = 0x00000002, /* Has Register_Device_Driver */
+        DN_ENUM_LOADED = 0x00000004, /* Has Register_Enumerator */
+        DN_STARTED = 0x00000008, /* Is currently configured */
+        DN_MANUAL = 0x00000010, /* Manually installed */
+        DN_NEED_TO_ENUM = 0x00000020, /* May need reenumeration */
+        DN_NOT_FIRST_TIME = 0x00000040, /* Has received a config */
+        DN_HARDWARE_ENUM = 0x00000080, /* Enum generates hardware ID */
+        DN_LIAR = 0x00000100, /* Lied about can reconfig once */
+        DN_HAS_MARK = 0x00000200, /* Not CM_Create_DevNode lately */
+        DN_HAS_PROBLEM = 0x00000400, /* Need device installer */
+        DN_FILTERED = 0x00000800, /* Is filtered */
+        DN_MOVED = 0x00001000, /* Has been moved */
+        DN_DISABLEABLE = 0x00002000, /* Can be rebalanced */
+        DN_REMOVABLE = 0x00004000, /* Can be removed */
+        DN_PRIVATE_PROBLEM = 0x00008000, /* Has a private problem */
+        DN_MF_PARENT = 0x00010000, /* Multi function parent */
+        DN_MF_CHILD = 0x00020000, /* Multi function child */
+        DN_WILL_BE_REMOVED = 0x00040000, /* Devnode is being removed */
+    }
+
+    // CM_PROB_ problem values defined in Cfg.h
+    internal enum CmProblem : ulong
+    {
+        CM_PROB_NOT_CONFIGURED = 0x00000001,
+        CM_PROB_DEVLOADER_FAILED = 0x00000002,
+        CM_PROB_OUT_OF_MEMORY = 0x00000003,
+        CM_PROB_ENTRY_IS_WRONG_TYPE = 0x00000004,
+        CM_PROB_LACKED_ARBITRATOR = 0x00000005,
+        CM_PROB_BOOT_CONFIG_CONFLICT = 0x00000006,
+        CM_PROB_FAILED_FILTER = 0x00000007,
+        CM_PROB_DEVLOADER_NOT_FOUND = 0x00000008,
+        CM_PROB_INVALID_DATA = 0x00000009,
+        CM_PROB_FAILED_START = 0x0000000A,
+        CM_PROB_LIAR = 0x0000000B,
+        CM_PROB_NORMAL_CONFLICT = 0x0000000C,
+        CM_PROB_NOT_VERIFIED = 0x0000000D,
+        CM_PROB_NEED_RESTART = 0x0000000E,
+        CM_PROB_REENUMERATION = 0x0000000F,
+        CM_PROB_PARTIAL_LOG_CONF = 0x00000010,
+        CM_PROB_UNKNOWN_RESOURCE = 0x00000011,
+        CM_PROB_REINSTALL = 0x00000012,
+        CM_PROB_REGISTRY = 0x00000013,
+        CM_PROB_VXDLDR = 0x00000014,
+        CM_PROB_WILL_BE_REMOVED = 0x00000015,
+        CM_PROB_DISABLED = 0x00000016,
+        CM_PROB_DEVLOADER_NOT_READY = 0x00000017,
+        CM_PROB_DEVICE_NOT_THERE = 0x00000018,
+        CM_PROB_MOVED = 0x00000019,
+        CM_PROB_TOO_EARLY = 0x0000001A,
+        CM_PROB_NO_VALID_LOG_CONF = 0x0000001B,
+        CM_PROB_FAILED_INSTALL = 0x0000001C,
+        CM_PROB_HARDWARE_DISABLED = 0x0000001D,
+        CM_PROB_CANT_SHARE_IRQ = 0x0000001E,
+        CM_PROB_FAILED_ADD = 0x0000001F,
+        CM_PROB_DISABLED_SERVICE = 0x00000020,
+        CM_PROB_TRANSLATION_FAILED = 0x00000021,
+        CM_PROB_NO_SOFTCONFIG = 0x00000022,
+        CM_PROB_BIOS_TABLE = 0x00000023,
+        CM_PROB_IRQ_TRANSLATION_FAILED = 0x00000024,
+        CM_PROB_FAILED_DRIVER_ENTRY = 0x00000025,
+        CM_PROB_DRIVER_FAILED_PRIOR_UNLOAD = 0x00000026,
+        CM_PROB_DRIVER_FAILED_LOAD = 0x00000027,
+        CM_PROB_DRIVER_SERVICE_KEY_INVALID = 0x00000028,
+        CM_PROB_LEGACY_SERVICE_NO_DEVICES = 0x00000029,
+        CM_PROB_DUPLICATE_DEVICE = 0x0000002A,
+        CM_PROB_FAILED_POST_START = 0x0000002B,
+        CM_PROB_HALTED = 0x0000002C,
+        CM_PROB_PHANTOM = 0x0000002D,
+        CM_PROB_SYSTEM_SHUTDOWN = 0x0000002E,
+        CM_PROB_HELD_FOR_EJECT = 0x0000002F,
+        CM_PROB_DRIVER_BLOCKED = 0x00000030,
+        CM_PROB_REGISTRY_TOO_LARGE = 0x00000031,
+    }
+
     [StructLayout(LayoutKind.Sequential)]
     internal struct DeviceInfoData
     {
@@ -182,6 +327,8 @@
     {
 
         private const string setupapi = "setupapi.dll";
+
+        private const string cfgmgr32 = "cfgmgr32.dll";
 
         private NativeMethods()
         {
@@ -231,6 +378,12 @@ ref int requiredSize);
 ref DeviceInfoData deviceInfoData, [In()]
 ref PropertyChangeParameters classInstallParams, int classInstallParamsSize);
 
+        [DllImport(cfgmgr32, CallingConvention = CallingConvention.Winapi, SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.I4)]
+        public static extern CmReturnCode CM_Get_DevNode_Status(ref CmStatus pulStatus,
+ref CmProblem pulProblemNumber,
+int dnDevInst, ulong ulFlags);
+
     }
 
     internal class SafeDeviceInfoSetHandle : SafeHandleZeroOrMinusOneIsInvalid
@@ -276,6 +429,54 @@ ref PropertyChangeParameters classInstallParams, int classInstallParamsSize);
                 int index = GetIndexOfInstance(diSetHandle, diData, instanceId);
                 // Disable...
                 EnableDevice(diSetHandle, diData[index], enable);
+            }
+            finally
+            {
+                if (diSetHandle != null)
+                {
+                    if (diSetHandle.IsClosed == false)
+                    {
+                        diSetHandle.Close();
+                    }
+                    diSetHandle.Dispose();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Returns true if device is disabled
+        /// </summary>
+        /// <param name="classGuid">The class guid of the device. Available in the device manager.</param>
+        /// <param name="instanceId">The device instance id of the device. Available in the device manager.</param>
+        public static bool? IsDeviceDisabled(Guid classGuid, string instanceId)
+        {
+            SafeDeviceInfoSetHandle diSetHandle = null;
+            try
+            {
+                // Get the handle to a device information set for all devices matching classGuid that are present on the 
+                // system.
+                diSetHandle = NativeMethods.SetupDiGetClassDevs(ref classGuid, null, IntPtr.Zero, SetupDiGetClassDevsFlags.Present);
+                // Get the device information data for each matching device.
+                DeviceInfoData[] diData = GetDeviceInfoData(diSetHandle);
+                // Find the index of our instance. i.e. the touchpad mouse - I have 3 mice attached...
+                int index = GetIndexOfInstance(diSetHandle, diData, instanceId);
+
+                if (index == -1)
+                {
+                    return null;
+                }
+
+                // Get status...
+                var status = default(CmStatus);
+                var problem = default(CmProblem);
+                var result = NativeMethods.CM_Get_DevNode_Status(ref status, ref problem, diData[index].DevInst, 0);
+
+                if (result != CmReturnCode.CR_SUCCESS)
+                {
+                    throw new Win32Exception($"Cfgmgr32 error: {result}");
+                }
+
+                return problem == CmProblem.CM_PROB_DISABLED;
             }
             finally
             {
