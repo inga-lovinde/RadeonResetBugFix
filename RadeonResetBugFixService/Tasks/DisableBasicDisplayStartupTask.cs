@@ -35,6 +35,10 @@
                     logger.Log($"Original start value {originalValue}");
                     Registry.SetValue(Constants.RegistryKeyBasicDisplay, "Start", 4);
                 }
+                else
+                {
+                    logger.Log($"Device is not enabled");
+                }
             }
         }
     }
