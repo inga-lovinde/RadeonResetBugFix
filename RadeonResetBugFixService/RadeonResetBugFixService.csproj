@@ -51,6 +51,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Constants.cs" />
     <Compile Include="Contracts\DeviceInfo.cs" />
     <Compile Include="Contracts\DevicesStatus.cs" />
     <Compile Include="Devices\KnownDevices.cs" />
@@ -88,6 +89,7 @@
     <Compile Include="Tasks\StopAudioServiceTask.cs" />
     <Compile Include="ThirdParty\DisableDevice.cs" />
     <Compile Include="Devices\DeviceHelper.cs" />
+    <Compile Include="ThirdParty\ServicePreshutdownHelpers.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

@@ -1,16 +1,10 @@
-﻿using Microsoft.Win32;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Diagnostics;
-using System.Linq;
-using System.ServiceProcess;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace RadeonResetBugFixService
+﻿namespace RadeonResetBugFixService
 {
+    using System;
+    using System.Reflection;
+    using System.ServiceProcess;
+    using Microsoft.Win32;
+
     public partial class RadeonResetBugFixService : ServiceBase
     {
         private MainHandler Handler { get; } = new MainHandler();
@@ -18,35 +12,108 @@ namespace RadeonResetBugFixService
         public RadeonResetBugFixService()
         {
             InitializeComponent();
+            this.EnablePreshutdown();
+        }
+
+        private void EnablePreshutdown()
+        {
+            const int SERVICE_ACCEPT_PRESHUTDOWN = 0x100;
+
+            var acceptedCommandsFieldInfo = typeof(ServiceBase).GetField("acceptedCommands", BindingFlags.Instance | BindingFlags.NonPublic);
+            if (acceptedCommandsFieldInfo == null)
+            {
+                throw new Exception("acceptedCommands field not found");
+            }
+
+            var value = (int)acceptedCommandsFieldInfo.GetValue(this);
+            acceptedCommandsFieldInfo.SetValue(this, value | SERVICE_ACCEPT_PRESHUTDOWN);
+        }
+
+        private void CallStop()
+        {
+            var deferredStopMethodInfo = typeof(ServiceBase).GetMethod("DeferredStop", BindingFlags.Instance | BindingFlags.NonPublic);
+            deferredStopMethodInfo.Invoke(this, null);
+        }
+
+        private void Process(string reason, Action<string> handle)
+        {
+            this.Handler.HandleLog($"{reason} initiated");
+            try
+            {
+                handle(reason);
+                this.Handler.HandleLog($"{reason} successfully finished");
+            }
+            catch (Exception e)
+            {
+                this.Handler.HandleLog($"{reason} error: {e}");
+            }
         }
 
         protected override void OnShutdown()
         {
-            SystemEvents.SessionEnding -= this.OnSessionEnding;
-            this.RequestAdditionalTime(300000);
-            this.Handler.HandleShutdown("ServiceBase.OnShutdown");
+            this.Process(
+                "ServiceBase.OnShutdown",
+                (string reason) =>
+                {
+                    this.CallStop();
+                });
         }
 
         protected override void OnStart(string[] args)
         {
-            this.Handler.HandleStartup("ServiceBase.OnStart");
-            this.RequestAdditionalTime(300000);
-            SystemEvents.SessionEnding += this.OnSessionEnding;
+            this.Process(
+                "ServiceBase.OnStart",
+                (string reason) =>
+                {
+                    this.RequestAdditionalTime((int)Constants.ServiceTimeout.TotalMilliseconds);
+                    this.Handler.HandleStartup(reason);
+                    this.EnablePreshutdown();
+                    SystemEvents.SessionEnding += this.OnSessionEnding;
+                });
         }
 
         protected override void OnStop()
         {
-            SystemEvents.SessionEnding -= this.OnSessionEnding;
-            this.RequestAdditionalTime(300000);
-            this.Handler.HandleShutdown("ServiceBase.OnStop");
+            this.Process(
+                "ServiceBase.OnStop",
+                (string reason) =>
+                {
+                    this.RequestAdditionalTime((int)Constants.ServiceTimeout.TotalMilliseconds);
+                    this.Handler.HandleShutdown(reason);
+                    SystemEvents.SessionEnding -= this.OnSessionEnding;
+                });
+        }
+
+        protected override void OnCustomCommand(int command)
+        {
+            const int SERVICE_CONTROL_PRESHUTDOWN = 0xf;
+
+            this.Process(
+                "ServiceBase.OnCustomCommand",
+                (string reason) =>
+                {
+                    this.Handler.HandleLog($"Custom command: {command}");
+
+                    if (command == SERVICE_CONTROL_PRESHUTDOWN)
+                    {
+                        this.CallStop();
+                    }
+                });
         }
 
         private void OnSessionEnding(object sender, SessionEndingEventArgs args)
         {
-            if (args.Reason == SessionEndReasons.SystemShutdown)
-            {
-                this.Handler.HandleShutdown("SystemEvents.SessionEnding");
-            }
+            this.Process(
+                "SystemEvents.OnSessionEnding",
+                (string reason) =>
+                {
+                    this.Handler.HandleLog($"Session end reason: ${args.Reason}");
+
+                    if (args.Reason == SessionEndReasons.SystemShutdown)
+                    {
+                        this.Handler.HandleShutdown(reason);
+                    }
+                });
         }
     }
 }

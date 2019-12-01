@@ -89,11 +89,15 @@
         private static void DoInstall()
         {
             Console.WriteLine("Setting registry values...");
+
             // Prevent Windows from killing services that take up to 300 seconds to shutdown
-            Registry.SetValue(@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control", "WaitToKillServiceTimeout", "300000", RegistryValueKind.String);
+            Registry.SetValue(@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control", "WaitToKillServiceTimeout", (int)Constants.ServiceTimeout.TotalMilliseconds, RegistryValueKind.String);
 
             // Disable fast restart
             Registry.SetValue(@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\Power", "HiberbootEnabled", 0, RegistryValueKind.DWord);
+
+            // Allow interactive services (FixMonitorTask only works correctly in interactive mode)
+            Registry.SetValue(@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Windows", "NoInteractiveServices", 0, RegistryValueKind.DWord);
 
             Console.WriteLine("Installing service...");
             ServiceHelpers.InstallService(nameof(RadeonResetBugFixService), typeof(RadeonResetBugFixService));

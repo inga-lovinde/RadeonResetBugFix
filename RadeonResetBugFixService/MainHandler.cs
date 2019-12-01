@@ -26,6 +26,14 @@
                 $"radeonfix_{date:yyyyMMdd}_{date:HHmmss}.log");
         }
 
+        public void HandleLog(string message)
+        {
+            using (ILogger fileLogger = new FileLogger(this.LogFilename))
+            {
+                fileLogger.Log(message);
+            }
+        }
+
         public void HandleStartup(string reason)
         {
             using (var fileLogger = new FileLogger(this.LogFilename))
@@ -75,6 +83,7 @@
                                 new ITask[]
                                 {
                                     new StopAudioServiceTask(),
+                                    new SleepTask(TimeSpan.FromSeconds(15)),
                                     new DisableAmdVideoTask(this.ShutdownDevicesStatus),
                                     new EnableVirtualVideoTask(this.ShutdownDevicesStatus),
                                     new LastResortDevicesRestoreTask(this.StartupDevicesStatus),

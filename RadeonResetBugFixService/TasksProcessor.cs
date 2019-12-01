@@ -1,6 +1,7 @@
 ﻿namespace RadeonResetBugFixService
 {
     using System;
+    using System.Collections.Generic;
     using Contracts;
     using Logging;
     using Tasks;
@@ -22,7 +23,7 @@
             }
         }
 
-        public static void ProcessTasks(ILogger logger, ITask[] tasks)
+        public static void ProcessTasks(ILogger logger, IEnumerable<ITask> tasks)
         {
             foreach (var task in tasks)
             {

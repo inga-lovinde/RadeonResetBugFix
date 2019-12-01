@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Configuration.Install;
-using System.Linq;
-using System.Management;
-using System.Threading.Tasks;
-
-namespace RadeonResetBugFixService
+﻿namespace RadeonResetBugFixService
 {
+    using System.ComponentModel;
+    using System.Configuration.Install;
+    using System.Management;
+
     [RunInstaller(true)]
     public partial class ProjectInstaller : System.Configuration.Install.Installer
     {
@@ -35,6 +30,8 @@ namespace RadeonResetBugFixService
                 if (wmiService != null)
                     wmiService.Dispose();
             }
+
+            ThirdParty.ServicePreshutdownHelpers.ServicePreshutdownHelpers.SetPreShutdownTimeOut(this.serviceInstaller1.ServiceName, (uint)Constants.ServiceTimeout.TotalMilliseconds);
         }
 
         private void serviceProcessInstaller1_AfterInstall(object sender, InstallEventArgs e)
