@@ -1,5 +1,6 @@
 ﻿namespace RadeonResetBugFixService
 {
+    using Microsoft.Win32;
     using System;
     using System.Security.Principal;
     using System.ServiceProcess;
@@ -87,24 +88,37 @@
 
         private static void DoInstall()
         {
+            Console.WriteLine("Setting registry values...");
+            // Prevent Windows from killing services that take up to 300 seconds to shutdown
+            Registry.SetValue(@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control", "WaitToKillServiceTimeout", "300000", RegistryValueKind.String);
+
+            // Disable fast restart
+            Registry.SetValue(@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\Power", "HiberbootEnabled", 0, RegistryValueKind.DWord);
+
+            Console.WriteLine("Installing service...");
             ServiceHelpers.InstallService(nameof(RadeonResetBugFixService), typeof(RadeonResetBugFixService));
+            Console.WriteLine("Starting service...");
             ServiceHelpers.StartService(nameof(RadeonResetBugFixService), typeof(RadeonResetBugFixService));
+            Console.WriteLine("Started service");
         }
 
         private static void DoUninstall()
         {
+            Console.WriteLine("Stopping service...");
             ServiceHelpers.StopService(nameof(RadeonResetBugFixService), typeof(RadeonResetBugFixService));
+            Console.WriteLine("Uninstalling service...");
             ServiceHelpers.UninstallService(nameof(RadeonResetBugFixService), typeof(RadeonResetBugFixService));
+            Console.WriteLine("Uninstalled");
         }
 
         private static void DoStartup()
         {
-            new MainHandler().HandleStartup();
+            new MainHandler().HandleStartup("Program.DoStartup");
         }
 
         private static void DoShutdown()
         {
-            new MainHandler().HandleShutdown();
+            new MainHandler().HandleShutdown("Program.DoShutdown");
         }
 
         // Code taken from https://stackoverflow.com/a/2679654

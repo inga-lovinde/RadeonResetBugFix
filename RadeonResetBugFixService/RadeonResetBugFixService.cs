@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -21,17 +22,31 @@ namespace RadeonResetBugFixService
 
         protected override void OnShutdown()
         {
-            this.Handler.HandleShutdown();
+            SystemEvents.SessionEnding -= this.OnSessionEnding;
+            this.RequestAdditionalTime(300000);
+            this.Handler.HandleShutdown("ServiceBase.OnShutdown");
         }
 
         protected override void OnStart(string[] args)
         {
-            this.Handler.HandleStartup();
+            this.Handler.HandleStartup("ServiceBase.OnStart");
+            this.RequestAdditionalTime(300000);
+            SystemEvents.SessionEnding += this.OnSessionEnding;
         }
 
         protected override void OnStop()
         {
-            this.Handler.HandleShutdown();
+            SystemEvents.SessionEnding -= this.OnSessionEnding;
+            this.RequestAdditionalTime(300000);
+            this.Handler.HandleShutdown("ServiceBase.OnStop");
+        }
+
+        private void OnSessionEnding(object sender, SessionEndingEventArgs args)
+        {
+            if (args.Reason == SessionEndReasons.SystemShutdown)
+            {
+                this.Handler.HandleShutdown("SystemEvents.SessionEnding");
+            }
         }
     }
 }

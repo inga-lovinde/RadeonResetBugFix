@@ -3,6 +3,8 @@
     using System;
     using System.Collections.Generic;
     using System.Management;
+    using System.Threading;
+    using System.Threading.Tasks;
     using Contracts;
 
     class DeviceHelper
@@ -72,17 +74,44 @@
 
         public static void DisableDevice(DeviceInfo deviceInfo)
         {
-            ThirdParty.DisableDevice.DeviceHelper.SetDeviceEnabled(deviceInfo.ClassGuid, deviceInfo.DeviceId, false);
+            RunWithTimeout(
+                () => ThirdParty.DisableDevice.DeviceHelper.SetDeviceEnabled(deviceInfo.ClassGuid, deviceInfo.DeviceId, false),
+                TimeSpan.FromSeconds(50));
         }
 
         public static void EnableDevice(DeviceInfo deviceInfo)
         {
-            ThirdParty.DisableDevice.DeviceHelper.SetDeviceEnabled(deviceInfo.ClassGuid, deviceInfo.DeviceId, true);
+            RunWithTimeout(
+                () => ThirdParty.DisableDevice.DeviceHelper.SetDeviceEnabled(deviceInfo.ClassGuid, deviceInfo.DeviceId, true),
+                TimeSpan.FromSeconds(50));
         }
 
         public static bool? IsDeviceCurrentlyDisabled(DeviceInfo deviceInfo)
         {
             return ThirdParty.DisableDevice.DeviceHelper.IsDeviceDisabled(deviceInfo.ClassGuid, deviceInfo.DeviceId);
+        }
+
+        private static void RunWithTimeout(Action action, TimeSpan timeout)
+        {
+            Exception localException = null;
+            Task.WaitAny(
+                Task.Run(() =>
+                {
+                    try
+                    {
+                        action();
+                    }
+                    catch (Exception e)
+                    {
+                        localException = new Exception("Exception from action", e);
+                    }
+                }),
+                Task.Delay(timeout));
+
+            if (localException != null)
+            {
+                throw localException;
+            }
         }
     }
 }

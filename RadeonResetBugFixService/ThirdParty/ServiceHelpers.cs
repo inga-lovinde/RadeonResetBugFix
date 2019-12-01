@@ -101,7 +101,7 @@
                 if (controller.Status != ServiceControllerStatus.Running)
                 {
                     controller.Start();
-                    controller.WaitForStatus(ServiceControllerStatus.Running, TimeSpan.FromSeconds(10));
+                    controller.WaitForStatus(ServiceControllerStatus.Running, TimeSpan.FromMinutes(6));
                 }
             }
         }
@@ -114,7 +114,7 @@
                 if (controller.Status != ServiceControllerStatus.Stopped)
                 {
                     controller.Stop();
-                    controller.WaitForStatus(ServiceControllerStatus.Stopped, TimeSpan.FromSeconds(10));
+                    controller.WaitForStatus(ServiceControllerStatus.Stopped, TimeSpan.FromMinutes(6));
                 }
             }
         }

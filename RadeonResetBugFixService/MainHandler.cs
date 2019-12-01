@@ -26,12 +26,13 @@
                 $"radeonfix_{date:yyyyMMdd}_{date:HHmmss}.log");
         }
 
-        public void HandleStartup()
+        public void HandleStartup(string reason)
         {
             using (var fileLogger = new FileLogger(this.LogFilename))
             {
                 using (ILogger logger = new TaskLoggerWrapper(fileLogger, "Startup"))
                 {
+                    logger.Log($"Reason: {reason}");
                     try
                     {
                         lock (this.Mutex)
@@ -43,6 +44,10 @@
                                     new SleepTask(TimeSpan.FromSeconds(20)),
                                     new DisableVirtualVideoTask(this.StartupDevicesStatus),
                                     new EnableAmdVideoTask(this.StartupDevicesStatus),
+                                    new SleepTask(TimeSpan.FromSeconds(40)),
+                                    new FixMonitorTask(),
+                                    new DisableVirtualVideoTask(this.StartupDevicesStatus),
+                                    new FixMonitorTask(),
                                 });
                         }
                     }
@@ -54,12 +59,13 @@
             }
         }
 
-        public void HandleShutdown()
+        public void HandleShutdown(string reason)
         {
             using (var fileLogger = new FileLogger(this.LogFilename))
             {
                 using (ILogger logger = new TaskLoggerWrapper(fileLogger, "Shutdown"))
                 {
+                    logger.Log($"Reason: {reason}");
                     try
                     {
                         lock (this.Mutex)
@@ -72,6 +78,7 @@
                                     new DisableAmdVideoTask(this.ShutdownDevicesStatus),
                                     new EnableVirtualVideoTask(this.ShutdownDevicesStatus),
                                     new LastResortDevicesRestoreTask(this.StartupDevicesStatus),
+                                    new LastResortDevicesRestoreTask(this.StartupDevicesStatus), // just in case
                                 });
                         }
                     }

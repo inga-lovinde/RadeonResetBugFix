@@ -39,6 +39,11 @@
                     }
                     else
                     {
+                        if (device.ErrorCode != 0)
+                        {
+                            logger.LogError($"Device is in error state: {device.ErrorCode}");
+                        }
+
                         logger.Log($"Disabling {device.Description}");
                         DeviceHelper.DisableDevice(device);
                         logger.Log($"Disabled {device.Description}");
@@ -51,6 +56,11 @@
                     if (!device.IsDisabled)
                     {
                         logger.Log($"{device.Description} is already enabled");
+
+                        if (device.ErrorCode != 0)
+                        {
+                            logger.LogError($"Device is in error state: {device.ErrorCode}");
+                        }
                     }
                     else
                     {
@@ -65,13 +75,17 @@
             {
                 if (this.ShouldDisable(device))
                 {
-                    if (!device.IsDisabled)
+                    if (device.IsDisabled)
                     {
-                        logger.LogError($"{device.Description} is enabled but should be disabled");
+                        logger.Log($"Successfully checked {device.Description} status");
+                    }
+                    else if (device.ErrorCode != 0)
+                    {
+                        logger.LogError($"Device is in error state: {device.ErrorCode}");
                     }
                     else
                     {
-                        logger.Log($"Successfully checked {device.Description} status");
+                        logger.LogError($"{device.Description} is enabled but should be disabled");
                     }
                 }
                 else if (this.ShouldEnable(device))
@@ -79,6 +93,10 @@
                     if (device.IsDisabled)
                     {
                         logger.Log($"{device.Description} is disabled but should be enabled");
+                    }
+                    else if (device.ErrorCode != 0)
+                    {
+                        logger.LogError($"Device is in error state: {device.ErrorCode}");
                     }
                     else
                     {
