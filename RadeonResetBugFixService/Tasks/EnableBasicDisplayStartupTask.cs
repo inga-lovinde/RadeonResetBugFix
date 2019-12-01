@@ -9,9 +9,9 @@
 
         void ITask.Run(ILogger logger)
         {
-            var originalValue = Registry.GetValue(Constants.BasicDisplayRegistryKey, "Start", -1);
+            var originalValue = Registry.GetValue(Constants.RegistryKeyBasicDisplay, "Start", -1);
             logger.Log($"Original start value {originalValue}");
-            Registry.SetValue(Constants.BasicDisplayRegistryKey, "Start", 3);
+            Registry.SetValue(Constants.RegistryKeyBasicDisplay, "Start", 3);
         }
     }
 }

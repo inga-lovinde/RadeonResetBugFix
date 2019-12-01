@@ -51,8 +51,8 @@
                                 {
                                     new EnableBasicDisplayStartupTask(),
                                     new SleepTask(TimeSpan.FromSeconds(20)),
-                                    new DisableVirtualVideoTask(this.StartupDevicesStatus),
                                     new EnableAmdVideoTask(this.StartupDevicesStatus),
+                                    new DisableVirtualVideoTask(this.StartupDevicesStatus),
                                     new SleepTask(TimeSpan.FromSeconds(40)),
                                     new FixMonitorTask(),
                                     new DisableVirtualVideoTask(this.StartupDevicesStatus),
@@ -84,12 +84,11 @@
                                 new ITask[]
                                 {
                                     new StopAudioServiceTask(),
-                                    new SleepTask(TimeSpan.FromSeconds(15)),
-                                    new DisableAmdVideoTask(this.ShutdownDevicesStatus),
                                     new EnableVirtualVideoTask(this.ShutdownDevicesStatus),
+                                    new DisableAmdVideoTask(this.ShutdownDevicesStatus),
                                     new LastResortDevicesRestoreTask(this.StartupDevicesStatus),
                                     new LastResortDevicesRestoreTask(this.StartupDevicesStatus), // just in case
-                                    new DisableBasicDisplayStartupTask(),
+                                    new DisableBasicDisplayStartupTask(this.StartupDevicesStatus),
                                 });
                         }
                     }

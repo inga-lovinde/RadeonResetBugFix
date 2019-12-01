@@ -45,6 +45,7 @@
             this.serviceInstaller1.ServiceName = "RadeonResetBugFixService";
             this.serviceInstaller1.StartType = System.ServiceProcess.ServiceStartMode.Automatic;
             this.serviceInstaller1.AfterInstall += new System.Configuration.Install.InstallEventHandler(this.serviceInstaller1_AfterInstall);
+            this.serviceInstaller1.AfterUninstall += new System.Configuration.Install.InstallEventHandler(this.serviceInstaller1_AfterUninstall);
             // 
             // ProjectInstaller
             // 
