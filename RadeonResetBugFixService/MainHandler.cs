@@ -49,6 +49,7 @@
                                 logger,
                                 new ITask[]
                                 {
+                                    new EnableBasicDisplayStartupTask(),
                                     new SleepTask(TimeSpan.FromSeconds(20)),
                                     new DisableVirtualVideoTask(this.StartupDevicesStatus),
                                     new EnableAmdVideoTask(this.StartupDevicesStatus),
@@ -88,6 +89,7 @@
                                     new EnableVirtualVideoTask(this.ShutdownDevicesStatus),
                                     new LastResortDevicesRestoreTask(this.StartupDevicesStatus),
                                     new LastResortDevicesRestoreTask(this.StartupDevicesStatus), // just in case
+                                    new DisableBasicDisplayStartupTask(),
                                 });
                         }
                     }
