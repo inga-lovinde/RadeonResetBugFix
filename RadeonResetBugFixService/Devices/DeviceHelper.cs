@@ -3,7 +3,6 @@
     using System;
     using System.Collections.Generic;
     using System.Management;
-    using System.Threading;
     using System.Threading.Tasks;
     using Contracts;
 
@@ -23,8 +22,12 @@
 
         private static Guid GuidTryParse(string input)
         {
-            Guid.TryParse(input, out var result);
-            return result;
+            if (Guid.TryParse(input, out var result))
+            {
+                return result;
+            }
+
+            return default;
         }
 
         private static DeviceInfo ConvertDeviceInfo(PropertyDataCollection deviceProperties)
@@ -93,25 +96,9 @@
 
         private static void RunWithTimeout(Action action, TimeSpan timeout)
         {
-            Exception localException = null;
             Task.WaitAny(
-                Task.Run(() =>
-                {
-                    try
-                    {
-                        action();
-                    }
-                    catch (Exception e)
-                    {
-                        localException = new Exception("Exception from action", e);
-                    }
-                }),
+                Task.Run(action),
                 Task.Delay(timeout));
-
-            if (localException != null)
-            {
-                throw localException;
-            }
         }
     }
 }

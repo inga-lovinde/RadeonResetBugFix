@@ -92,7 +92,7 @@
             }
         }
 
-        public static void StartService(string serviceName, Type serviceType)
+        public static void StartService(string serviceName)
         {
             if (!IsInstalled(serviceName)) return;
 
@@ -101,20 +101,21 @@
                 if (controller.Status != ServiceControllerStatus.Running)
                 {
                     controller.Start();
-                    controller.WaitForStatus(ServiceControllerStatus.Running, TimeSpan.FromMinutes(6));
+                    controller.WaitForStatus(ServiceControllerStatus.Running, Constants.ServiceTimeout);
                 }
             }
         }
 
-        public static void StopService(string serviceName, Type serviceType)
+        public static void StopService(string serviceName)
         {
             if (!IsInstalled(serviceName)) return;
+
             using (ServiceController controller = new ServiceController(serviceName))
             {
                 if (controller.Status != ServiceControllerStatus.Stopped)
                 {
                     controller.Stop();
-                    controller.WaitForStatus(ServiceControllerStatus.Stopped, TimeSpan.FromMinutes(6));
+                    controller.WaitForStatus(ServiceControllerStatus.Stopped, Constants.ServiceTimeout);
                 }
             }
         }

@@ -20,57 +20,61 @@
 
                 if (this.ShouldStart(originalService))
                 {
-                    var service = new ServiceController(originalService.ServiceName);
-                    if (service.Status == ServiceControllerStatus.Running)
+                    using (var service = new ServiceController(originalService.ServiceName))
                     {
-                        logger.Log($"{serviceDescription} is already running");
-                    }
-                    else
-                    {
-                        if (service.Status != ServiceControllerStatus.StartPending)
-                        {
-                            logger.Log($"Starting service {serviceDescription}");
-                            service.Start();
-                            logger.Log($"Initiated service start for");
-                        }
-
-                        logger.Log($"Waiting for service {serviceDescription} to start");
-                        service.WaitForStatus(ServiceControllerStatus.Running, TimeSpan.FromSeconds(30));
                         if (service.Status == ServiceControllerStatus.Running)
                         {
-                            logger.Log($"Service is running");
+                            logger.Log($"{serviceDescription} is already running");
                         }
                         else
                         {
-                            logger.Log($"Failed; service state is {service.Status}");
+                            if (service.Status != ServiceControllerStatus.StartPending)
+                            {
+                                logger.Log($"Starting service {serviceDescription}");
+                                service.Start();
+                                logger.Log($"Initiated service start for");
+                            }
+
+                            logger.Log($"Waiting for service {serviceDescription} to start");
+                            service.WaitForStatus(ServiceControllerStatus.Running, TimeSpan.FromSeconds(30));
+                            if (service.Status == ServiceControllerStatus.Running)
+                            {
+                                logger.Log($"Service is running");
+                            }
+                            else
+                            {
+                                logger.Log($"Failed; service state is {service.Status}");
+                            }
                         }
                     }
                 }
                 else if (this.ShouldStop(originalService))
                 {
-                    var service = new ServiceController(originalService.ServiceName);
-                    if (service.Status == ServiceControllerStatus.Stopped)
+                    using (var service = new ServiceController(originalService.ServiceName))
                     {
-                        logger.Log($"{serviceDescription} is already stopped");
-                    }
-                    else
-                    {
-                        if (service.Status != ServiceControllerStatus.StopPending)
-                        {
-                            logger.Log($"Stopping service {serviceDescription}");
-                            service.Stop();
-                            logger.Log($"Initiated service stop");
-                        }
-
-                        logger.Log($"Waiting for service {serviceDescription} to stop");
-                        service.WaitForStatus(ServiceControllerStatus.Stopped, TimeSpan.FromSeconds(15));
                         if (service.Status == ServiceControllerStatus.Stopped)
                         {
-                            logger.Log($"Service is stopped");
+                            logger.Log($"{serviceDescription} is already stopped");
                         }
                         else
                         {
-                            logger.Log($"Failed; service state is {service.Status}");
+                            if (service.Status != ServiceControllerStatus.StopPending)
+                            {
+                                logger.Log($"Stopping service {serviceDescription}");
+                                service.Stop();
+                                logger.Log($"Initiated service stop");
+                            }
+
+                            logger.Log($"Waiting for service {serviceDescription} to stop");
+                            service.WaitForStatus(ServiceControllerStatus.Stopped, TimeSpan.FromSeconds(15));
+                            if (service.Status == ServiceControllerStatus.Stopped)
+                            {
+                                logger.Log($"Service is stopped");
+                            }
+                            else
+                            {
+                                logger.Log($"Failed; service state is {service.Status}");
+                            }
                         }
                     }
                 }

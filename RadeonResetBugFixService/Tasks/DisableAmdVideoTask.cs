@@ -1,6 +1,4 @@
-﻿using RadeonResetBugFixService.Contracts;
-
-namespace RadeonResetBugFixService.Tasks
+﻿namespace RadeonResetBugFixService.Tasks
 {
     using Contracts;
     using Devices;

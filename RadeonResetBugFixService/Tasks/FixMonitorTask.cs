@@ -1,9 +1,8 @@
 ﻿namespace RadeonResetBugFixService.Tasks
 {
+    using System;
     using System.Collections.Generic;
-    using System.Linq;
     using Contracts;
-    using Devices;
 
     class FixMonitorTask : ITask
     {
@@ -16,7 +15,7 @@
             foreach (var display in ThirdParty.MonitorChanger.Display.GetDisplayList())
             {
                 logger.Log($"Found display(ID='{display.DeviceID}' Key='{display.DeviceKey}', Name='{display.DeviceName}', String='{display.DeviceString}')");
-                if (display.DeviceID.ToLowerInvariant().StartsWith(@"monitor\mhs062e"))
+                if (display.DeviceID.StartsWith(@"Monitor\MHS062E", StringComparison.OrdinalIgnoreCase))
                 {
                     hypervDisplays.Add(display);
                 }

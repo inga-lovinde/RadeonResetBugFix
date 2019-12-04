@@ -1,6 +1,5 @@
 ﻿namespace RadeonResetBugFixService.Tasks
 {
-    using Microsoft.Win32;
     using Contracts;
 
     class EnableBasicDisplayStartupTask : ITask
@@ -9,9 +8,9 @@
 
         void ITask.Run(ILogger logger)
         {
-            var originalValue = Registry.GetValue(Constants.RegistryKeyBasicDisplay, "Start", -1);
+            var originalValue = RegistryHelper.GetBasicDisplayStartType();
             logger.Log($"Original start value {originalValue}");
-            Registry.SetValue(Constants.RegistryKeyBasicDisplay, "Start", 3);
+            RegistryHelper.SetBasicDisplayStartType(3);
         }
     }
 }

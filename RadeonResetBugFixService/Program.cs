@@ -1,6 +1,5 @@
 ﻿namespace RadeonResetBugFixService
 {
-    using Microsoft.Win32;
     using System;
     using System.Security.Principal;
     using System.ServiceProcess;
@@ -13,6 +12,11 @@
         /// </summary>
         public static int Main(string[] args)
         {
+            if (args == null)
+            {
+                throw new ArgumentNullException(nameof(args));
+            }
+
             if (Environment.UserInteractive)
             {
                 if (!HasAdministratorPrivileges())
@@ -52,23 +56,21 @@
                 return;
             }
 
-            switch (args[0].ToLowerInvariant())
+            var command = args[0];
+            if (command.Equals("install", StringComparison.OrdinalIgnoreCase)) {
+                DoInstall();
+            }
+            else if (command.Equals("uninstall", StringComparison.OrdinalIgnoreCase))
             {
-                case "install":
-                    DoInstall();
-                    return;
-                case "uninstall":
-                    DoUninstall();
-                    return;
-                case "startup":
-                    DoStartup();
-                    return;
-                case "shutdown":
-                    DoShutdown();
-                    return;
-                default:
-                    ShowHelp();
-                    return;
+                DoUninstall();
+            }
+            else if (command.Equals("startup", StringComparison.OrdinalIgnoreCase))
+            {
+                DoStartup();
+            }
+            else if (command.Equals("shutdown", StringComparison.OrdinalIgnoreCase))
+            {
+                DoShutdown();
             }
         }
 
@@ -90,26 +92,17 @@
         {
             Console.WriteLine("Setting registry values...");
 
-            // Prevent Windows from killing services that take up to 300 seconds to shutdown
-            Registry.SetValue(@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control", "WaitToKillServiceTimeout", (int)Constants.ServiceTimeout.TotalMilliseconds, RegistryValueKind.String);
-
-            // Disable fast restart
-            Registry.SetValue(@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\Power", "HiberbootEnabled", 0, RegistryValueKind.DWord);
-
-            // Allow interactive services (FixMonitorTask only works correctly in interactive mode)
-            Registry.SetValue(@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Windows", "NoInteractiveServices", 0, RegistryValueKind.DWord);
-
             Console.WriteLine("Installing service...");
             ServiceHelpers.InstallService(nameof(RadeonResetBugFixService), typeof(RadeonResetBugFixService));
             Console.WriteLine("Starting service...");
-            ServiceHelpers.StartService(nameof(RadeonResetBugFixService), typeof(RadeonResetBugFixService));
+            ServiceHelpers.StartService(nameof(RadeonResetBugFixService));
             Console.WriteLine("Started service");
         }
 
         private static void DoUninstall()
         {
             Console.WriteLine("Stopping service...");
-            ServiceHelpers.StopService(nameof(RadeonResetBugFixService), typeof(RadeonResetBugFixService));
+            ServiceHelpers.StopService(nameof(RadeonResetBugFixService));
             Console.WriteLine("Uninstalling service...");
             ServiceHelpers.UninstallService(nameof(RadeonResetBugFixService), typeof(RadeonResetBugFixService));
             Console.WriteLine("Uninstalled");
