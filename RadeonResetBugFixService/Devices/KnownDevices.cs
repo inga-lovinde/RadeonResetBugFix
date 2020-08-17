@@ -13,7 +13,10 @@
 
         public static bool IsVirtualVideo(DeviceInfo device)
         {
-            return device.Service.Equals("hypervideo", StringComparison.OrdinalIgnoreCase);
+            return (
+                device.Service.Equals("hypervideo", StringComparison.OrdinalIgnoreCase) || // Hyper-V video adapter
+                device.Service.Equals("qxldod", StringComparison.OrdinalIgnoreCase) // virtio/libvirt for Win8+
+            );
         }
     }
 }

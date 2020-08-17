@@ -12,13 +12,14 @@ You have attempted solving this by various fixes found in the internet
 (startup/shutdown scripts in group policies, etc),
 but did not find them reliable.
 And even then, after applying these fixes,
-you find out that "Hyper-V Display" is now the primary display adapter,
+you find out that virtual GPU is now the primary display adapter,
 GPU acceleration is unavailable,
 and the screen connected to Radeon GPU is treated as the secondary screen.
 
 ## Limitations
 
-Currently this project only supports Hyper-V VMs,
+Currently this project is only tested with Hyper-V VMs,
+and probably also supports KVM and QEMU,
 but it should be trivial to add other hypervisors support
 (the relevant files are `Tasks\DisableVirtualVideoTask.cs` and `EnableVirtualVideoTask.cs`).
 
@@ -120,14 +121,14 @@ and re-enable "basic video" system service automatic startup manually using `reg
 
 * Enable Radeon GPU
 
-* Now that it's not the only GPU, disable Hyper-V GPU
+* Now that it's not the only GPU, disable virtual GPU
 
 On service stop (pre-shutdown / shutdown):
 
 * Stop Windows Audio service
 (otherwise it won't let us disable Radeon devices)
 
-* Enable Hyper-V GPU
+* Enable virtual GPU
 
 * Now that it's not the only GPU, disable Radeon GPU
 
