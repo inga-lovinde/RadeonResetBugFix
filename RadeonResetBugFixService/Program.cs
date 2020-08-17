@@ -22,8 +22,8 @@
                 if (!HasAdministratorPrivileges())
                 {
                     Console.Error.WriteLine("Access Denied.");
-                    Console.Error.WriteLine("Administrator permissions are  needed to use the selected options.");
-                    Console.Error.WriteLine("Use an administrator command prompt to complete these tasks.");
+                    Console.Error.WriteLine("Administrator permissions are needed to use this tool.");
+                    Console.Error.WriteLine("Run the command again from an administrator command prompt.");
                     return 740; // ERROR_ELEVATION_REQUIRED
                 }
 
@@ -50,19 +50,18 @@
 
         private static void MainConsole(string[] args)
         {
-            if (args.Length != 1)
-            {
-                ShowHelp();
-                return;
-            }
+            var command = args.Length == 1 ? args[0] : string.Empty;
 
-            var command = args[0];
             if (command.Equals("install", StringComparison.OrdinalIgnoreCase)) {
                 DoInstall();
             }
             else if (command.Equals("uninstall", StringComparison.OrdinalIgnoreCase))
             {
                 DoUninstall();
+            }
+            else if (command.Equals("reinstall", StringComparison.OrdinalIgnoreCase))
+            {
+                DoReinstall();
             }
             else if (command.Equals("startup", StringComparison.OrdinalIgnoreCase))
             {
@@ -71,6 +70,10 @@
             else if (command.Equals("shutdown", StringComparison.OrdinalIgnoreCase))
             {
                 DoShutdown();
+            }
+            else
+            {
+                ShowHelp();
             }
         }
 
@@ -82,10 +85,12 @@
             Console.WriteLine("\t\tInstalls service");
             Console.WriteLine($"\t{exeName} uninstall");
             Console.WriteLine("\t\tUninstalls service");
+            Console.WriteLine($"\t{exeName} reinstall");
+            Console.WriteLine("\t\tReinstalls service (might be useful for some upgrades)");
             Console.WriteLine($"\t{exeName} startup");
-            Console.WriteLine("\t\tPerforms startup sequence");
+            Console.WriteLine("\t\tPerforms startup sequence (development command, does not affect services)");
             Console.WriteLine($"\t{exeName} shutdown");
-            Console.WriteLine("\t\tPerforms shutdown sequence");
+            Console.WriteLine("\t\tPerforms shutdown sequence (development command, does not affect services)");
         }
 
         private static void DoInstall()
@@ -93,19 +98,31 @@
             Console.WriteLine("Setting registry values...");
 
             Console.WriteLine("Installing service...");
-            ServiceHelpers.InstallService(nameof(RadeonResetBugFixService), typeof(RadeonResetBugFixService));
+            ServiceHelpers.InstallService(Constants.ServiceName, typeof(RadeonResetBugFixService));
             Console.WriteLine("Starting service...");
-            ServiceHelpers.StartService(nameof(RadeonResetBugFixService));
-            Console.WriteLine("Started service");
+            ServiceHelpers.StartService(Constants.ServiceName);
+            Console.WriteLine("Should restart service now; stopping service...");
+            ServiceHelpers.StopService(Constants.ServiceName);
+            Console.WriteLine("Starting service...");
+            ServiceHelpers.StartService(Constants.ServiceName);
         }
 
         private static void DoUninstall()
         {
             Console.WriteLine("Stopping service...");
-            ServiceHelpers.StopService(nameof(RadeonResetBugFixService));
+            ServiceHelpers.StopService(Constants.ServiceName);
             Console.WriteLine("Uninstalling service...");
-            ServiceHelpers.UninstallService(nameof(RadeonResetBugFixService), typeof(RadeonResetBugFixService));
+            ServiceHelpers.UninstallService(Constants.ServiceName, typeof(RadeonResetBugFixService));
             Console.WriteLine("Uninstalled");
+        }
+
+        private static void DoReinstall()
+        {
+            Console.WriteLine("Attempting to uninstall...");
+            DoUninstall();
+
+            Console.WriteLine("Attempting to install...");
+            DoInstall();
         }
 
         private static void DoStartup()

@@ -36,8 +36,10 @@
 
         public static AssemblyInstaller GetInstaller(Type serviceType)
         {
-            AssemblyInstaller installer = new AssemblyInstaller(serviceType.Assembly, null);
-            installer.UseNewContext = true;
+            AssemblyInstaller installer = new AssemblyInstaller(serviceType.Assembly, null)
+            {
+                UseNewContext = true
+            };
             return installer;
         }
 
@@ -74,7 +76,7 @@
         {
             if (!IsInstalled(serviceName))
             {
-                Console.WriteLine("Service not installed");
+                Console.WriteLine("Service not installed; nothing to uninstall");
                 return;
             }
 
@@ -94,7 +96,11 @@
 
         public static void StartService(string serviceName)
         {
-            if (!IsInstalled(serviceName)) return;
+            if (!IsInstalled(serviceName))
+            {
+                Console.WriteLine("Service not installed; nothing to start");
+                return;
+            }
 
             using (ServiceController controller = new ServiceController(serviceName))
             {
@@ -108,7 +114,11 @@
 
         public static void StopService(string serviceName)
         {
-            if (!IsInstalled(serviceName)) return;
+            if (!IsInstalled(serviceName))
+            {
+                Console.WriteLine("Service not installed; nothing to stop");
+                return;
+            }
 
             using (ServiceController controller = new ServiceController(serviceName))
             {

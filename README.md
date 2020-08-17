@@ -16,6 +16,11 @@ you find out that virtual GPU is now the primary display adapter,
 GPU acceleration is unavailable,
 and the screen connected to Radeon GPU is treated as the secondary screen.
 
+This service intends to solve all the above problems.
+With it, you will be able to use Radeon GPU as your only GPU,
+with your actual display connected to Radeon as a primary display,
+and reboot your VM without triggering AMD reset bug - even installing Windows updates!
+
 ## Limitations
 
 Currently this project is only tested with Hyper-V VMs,
@@ -23,7 +28,16 @@ and probably also supports KVM and QEMU,
 but it should be trivial to add other hypervisors support
 (the relevant files are `Tasks\DisableVirtualVideoTask.cs` and `EnableVirtualVideoTask.cs`).
 
+**Note that you will still have to add a virtual GPU to your VM,
+otherwise Windows won't boot.**
+
+Note that it will add 1-5 minutes both to startup and to shutdown time.
+So don't panic if your screen is black immediately after VM startup,
+it is expected.
+
 ## Install instructions
+
+Put `RadeonResetBugFixService.exe` in a permanent location.
 
 In elevated command prompt in Guest VM, run
 
@@ -31,9 +45,23 @@ In elevated command prompt in Guest VM, run
 RadeonResetBugFixService.exe install
 ```
 
-Then check that everything works correctly by opening Services (`services.msc`),
-locating Radeon Reset Bug Fix Service there and starting or restarting it.
-The display connected to Radeon GPU should go dark and then work again.
+The screen may go blank several times during the process.
+It may take up to 15 minutes total (but should take less than 5).
+
+Do not remove the file after that, or the service won't be able to start or stop.
+The `install` command does not create any copies, does not create a folder in `Program Files`,
+it simply adds a service to Windows, but the service refers to the `exe` file you invoked.
+
+## Upgrade instructions
+
+In elevated command prompt in Guest VM, run
+
+```
+RadeonResetBugFixService.exe reinstall
+```
+
+The screen may go blank several times during the process.
+It may take up to 20 minutes total (but should take less than 5).
 
 ## Uninstall instructions
 
@@ -42,6 +70,9 @@ In elevated command prompt in Guest VM, run
 ```
 RadeonResetBugFixService.exe uninstall
 ```
+
+The screen may go blank several times during the process.
+It may take up to 5 minutes total (but should take less than 2).
 
 ## Debugging
 

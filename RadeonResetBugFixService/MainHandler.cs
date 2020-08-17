@@ -2,7 +2,6 @@
 {
     using System;
     using System.IO;
-    using System.Reflection;
     using Contracts;
     using Logging;
     using Tasks;
@@ -21,8 +20,7 @@
         {
             var date = DateTime.Now;
             this.LogFilename = Path.Combine(
-                Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
-                "logs",
+                Constants.LogDirectory,
                 $"radeonfix_{date:yyyyMMdd}_{date:HHmmss}.log");
         }
 

@@ -3,6 +3,7 @@
     using System;
     using System.ComponentModel;
     using System.Configuration.Install;
+    using System.IO;
     using System.Linq;
     using System.Management;
 
@@ -16,6 +17,9 @@
 
         private void serviceInstaller1_AfterInstall(object sender, InstallEventArgs e)
         {
+            Console.WriteLine($"Creating log directory ({Constants.LogDirectory})");
+            Directory.CreateDirectory(Constants.LogDirectory);
+
             Console.WriteLine("Preventing Windows from killing services that take up to 300 seconds to shutdown");
             RegistryHelper.SetWaitToKillServiceTimeout((int)Constants.ServiceTimeout.TotalMilliseconds);
 
