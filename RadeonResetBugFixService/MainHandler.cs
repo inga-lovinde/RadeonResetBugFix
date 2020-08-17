@@ -15,7 +15,7 @@
 
         private DevicesStatus ShutdownDevicesStatus { get; } = new DevicesStatus();
 
-        private object Mutex = new object();
+        private readonly object Mutex = new object();
 
         public MainHandler()
         {
