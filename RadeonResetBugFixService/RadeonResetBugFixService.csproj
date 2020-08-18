@@ -58,6 +58,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ConsoleHelper.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Contracts\DeviceInfo.cs" />
     <Compile Include="Contracts\DevicesStatus.cs" />

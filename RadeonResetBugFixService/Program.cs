@@ -1,6 +1,7 @@
 ﻿namespace RadeonResetBugFixService
 {
     using System;
+    using System.Runtime.InteropServices;
     using System.Security.Principal;
     using System.ServiceProcess;
     using ThirdParty.ServiceHelpers;
@@ -17,7 +18,13 @@
                 throw new ArgumentNullException(nameof(args));
             }
 
-            if (Environment.UserInteractive)
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                Console.Error.WriteLine("This program only runs on Windows");
+                return -1;
+            }
+
+            if (ConsoleHelper.HaveVisibleConsole())
             {
                 if (!HasAdministratorPrivileges())
                 {
