@@ -105,6 +105,7 @@
             ServiceHelpers.StopService(Constants.ServiceName);
             Console.WriteLine("Starting service...");
             ServiceHelpers.StartService(Constants.ServiceName);
+            Console.WriteLine("Service started");
         }
 
         private static void DoUninstall()
