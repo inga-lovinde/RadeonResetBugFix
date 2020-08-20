@@ -72,6 +72,10 @@
             {
                 DoShutdown();
             }
+            else if (command.Equals("diagnose", StringComparison.OrdinalIgnoreCase))
+            {
+                DoDiagnose();
+            }
             else
             {
                 ShowHelp();
@@ -92,6 +96,8 @@
             Console.WriteLine("\t\tPerforms startup sequence (development command, does not affect services)");
             Console.WriteLine($"\t{exeName} shutdown");
             Console.WriteLine("\t\tPerforms shutdown sequence (development command, does not affect services)");
+            Console.WriteLine($"\t{exeName} diagnose");
+            Console.WriteLine("\t\tPerforms diagnose (see result file in logs folder)");
         }
 
         private static void DoInstall()
@@ -135,6 +141,11 @@
         private static void DoShutdown()
         {
             new MainHandler().HandleShutdown("Program.DoShutdown");
+        }
+
+        private static void DoDiagnose()
+        {
+            new MainHandler().HandleDiagnose("Program.DoDiagnose");
         }
     }
 }

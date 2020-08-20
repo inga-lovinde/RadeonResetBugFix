@@ -97,5 +97,32 @@
                 }
             }
         }
+
+        public void HandleDiagnose(string reason)
+        {
+            using (var fileLogger = new FileLogger(this.LogFilename))
+            {
+                using (ILogger logger = new TaskLoggerWrapper(fileLogger, "Diagnose"))
+                {
+                    logger.Log($"Reason: {reason}");
+                    try
+                    {
+                        lock (this.Mutex)
+                        {
+                            TasksProcessor.ProcessTasks(
+                                logger,
+                                new ITask[]
+                                {
+                                    new ListDevicesTask(),
+                                });
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        logger.LogError(e.ToString());
+                    }
+                }
+            }
+        }
     }
 }

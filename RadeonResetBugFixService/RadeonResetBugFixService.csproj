@@ -89,6 +89,7 @@
     <Compile Include="Tasks\EnableBasicDisplayStartupTask.cs" />
     <Compile Include="Tasks\FixMonitorTask.cs" />
     <Compile Include="Tasks\LastResortDevicesRestoreTask.cs" />
+    <Compile Include="Tasks\ListDevicesTask.cs" />
     <Compile Include="Tasks\SleepTask.cs" />
     <Compile Include="ThirdParty\MonitorChanger.cs" />
     <Compile Include="ThirdParty\ServiceHelpers.cs" />
