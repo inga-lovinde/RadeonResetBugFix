@@ -44,6 +44,9 @@
   <PropertyGroup>
     <StartupObject />
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Configuration.Install" />
@@ -58,7 +61,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ConsoleHelper.cs" />
+    <Compile Include="EnvironmentHelper.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Contracts\DeviceInfo.cs" />
     <Compile Include="Contracts\DevicesStatus.cs" />
@@ -106,6 +109,7 @@
     <None Include=".editorconfig" />
     <None Include="App.config" />
     <None Include="packages.config" />
+    <None Include="Properties\app.manifest" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="ProjectInstaller.resx">

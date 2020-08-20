@@ -1,8 +1,6 @@
 ﻿namespace RadeonResetBugFixService
 {
     using System;
-    using System.Runtime.InteropServices;
-    using System.Security.Principal;
     using System.ServiceProcess;
     using ThirdParty.ServiceHelpers;
 
@@ -18,15 +16,15 @@
                 throw new ArgumentNullException(nameof(args));
             }
 
-            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            if (!EnvironmentHelper.IsVistaOrNewer())
             {
-                Console.Error.WriteLine("This program only runs on Windows");
+                Console.Error.WriteLine("This program only runs on Windows Vista or newer");
                 return -1;
             }
 
-            if (ConsoleHelper.HaveVisibleConsole())
+            if (EnvironmentHelper.IsConsoleVisibleOnWindows())
             {
-                if (!HasAdministratorPrivileges())
+                if (!EnvironmentHelper.HasAdministratorPrivileges())
                 {
                     Console.Error.WriteLine("Access Denied.");
                     Console.Error.WriteLine("Administrator permissions are needed to use this tool.");
@@ -43,14 +41,10 @@
             }
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "Windows service initialization")]
         private static int MainService()
         {
-            ServiceBase[] ServicesToRun;
-            ServicesToRun = new ServiceBase[]
-            {
-                new RadeonResetBugFixService()
-            };
-            ServiceBase.Run(ServicesToRun);
+            ServiceBase.Run(new RadeonResetBugFixService());
 
             return 0;
         }
@@ -141,14 +135,6 @@
         private static void DoShutdown()
         {
             new MainHandler().HandleShutdown("Program.DoShutdown");
-        }
-
-        // Code taken from https://stackoverflow.com/a/2679654
-        private static bool HasAdministratorPrivileges()
-        {
-            WindowsIdentity id = WindowsIdentity.GetCurrent();
-            WindowsPrincipal principal = new WindowsPrincipal(id);
-            return principal.IsInRole(WindowsBuiltInRole.Administrator);
         }
     }
 }

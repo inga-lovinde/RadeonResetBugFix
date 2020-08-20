@@ -19,15 +19,21 @@
             }
         }
 
-        private static RegistryValuePath PreshutdownOrderPath = new RegistryValuePath(@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control", "PreshutdownOrder");
+        private static string BasicDisplayServiceName { get; } = (
+            EnvironmentHelper.IsWindows8OrNewer()
+                ? "BasicDisplay"
+                : "vga"
+        );
 
-        private static RegistryValuePath WaitToKillServiceTimeoutPath = new RegistryValuePath(@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control", "WaitToKillServiceTimeout");
+        private static RegistryValuePath PreshutdownOrderPath { get; } = new RegistryValuePath(@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control", "PreshutdownOrder");
 
-        private static RegistryValuePath FastRebootPath = new RegistryValuePath(@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\Power", "HiberbootEnabled");
+        private static RegistryValuePath WaitToKillServiceTimeoutPath { get; } = new RegistryValuePath(@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control", "WaitToKillServiceTimeout");
 
-        private static RegistryValuePath NoInteractiveServicesPath = new RegistryValuePath(@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Windows", "NoInteractiveServices");
+        private static RegistryValuePath FastRebootPath { get; } = new RegistryValuePath(@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\Power", "HiberbootEnabled");
 
-        private static RegistryValuePath BasicDisplayStartTypePath = new RegistryValuePath(@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\BasicDisplay", "Start");
+        private static RegistryValuePath NoInteractiveServicesPath { get; } = new RegistryValuePath(@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Windows", "NoInteractiveServices");
+
+        private static RegistryValuePath BasicDisplayStartTypePath { get; } = new RegistryValuePath(@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\" + BasicDisplayServiceName, "Start");
 
         private static T GetValue<T>(RegistryValuePath path, T defaultValue = default) => (T)Registry.GetValue(path.KeyName, path.ValueName, defaultValue);
 

@@ -92,11 +92,14 @@
                 "ServiceBase.OnCustomCommand",
                 (string reason) =>
                 {
-                    this.Handler.HandleLog($"Custom command: {command}");
-
                     if (command == SERVICE_CONTROL_PRESHUTDOWN)
                     {
+                        this.Handler.HandleLog($"Custom command: preshutdown");
                         this.CallStop();
+                    }
+                    else
+                    {
+                        this.Handler.HandleLog($"Unknown custom command: {command}");
                     }
                 });
         }
