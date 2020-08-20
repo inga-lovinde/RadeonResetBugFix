@@ -1,6 +1,7 @@
 ﻿namespace RadeonResetBugFixService.Devices
 {
     using System;
+    using System.Linq;
     using Contracts;
 
     static class KnownDevices
@@ -13,10 +14,12 @@
 
         public static bool IsVirtualVideo(DeviceInfo device)
         {
-            return (
-                device.Service.Equals("hypervideo", StringComparison.OrdinalIgnoreCase) || // Hyper-V video adapter
-                device.Service.Equals("qxldod", StringComparison.OrdinalIgnoreCase) // virtio/libvirt for Win8+
-            );
+            return new[]
+            {
+                "hypervideo", // Hyper-V video adapter
+                "qxldod", // virtio/libvirt for Win8+
+                "qxl", // virtio/libvirt for Win7
+            }.Contains(device.Service, StringComparer.OrdinalIgnoreCase);
         }
     }
 }
