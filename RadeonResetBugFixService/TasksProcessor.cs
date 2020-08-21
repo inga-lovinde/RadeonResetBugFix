@@ -8,7 +8,7 @@
 
     static class TasksProcessor
     {
-        private static void ProcessTask(ILogger logger, ITask task)
+        public static void ProcessTask(ILogger logger, ITask task)
         {
             using (ILogger taskLogger = new TaskLoggerWrapper(logger, task.TaskName))
             {

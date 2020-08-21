@@ -85,23 +85,27 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Logging\TaskLoggerWrapper.cs" />
     <Compile Include="RegistryHelper.cs" />
-    <Compile Include="Tasks\DisableBasicDisplayStartupTask.cs" />
-    <Compile Include="Tasks\EnableBasicDisplayStartupTask.cs" />
-    <Compile Include="Tasks\FixMonitorTask.cs" />
-    <Compile Include="Tasks\LastResortDevicesRestoreTask.cs" />
-    <Compile Include="Tasks\ListDevicesTask.cs" />
-    <Compile Include="Tasks\SleepTask.cs" />
+    <Compile Include="Tasks\BasicTasks\DisableBasicDisplayStartupTask.cs" />
+    <Compile Include="Tasks\BasicTasks\EnableBasicDisplayStartupTask.cs" />
+    <Compile Include="Tasks\BasicTasks\FixMonitorTask.cs" />
+    <Compile Include="Tasks\BasicTasks\LastResortDevicesRestoreTask.cs" />
+    <Compile Include="Tasks\BasicTasks\ListDevicesTask.cs" />
+    <Compile Include="Tasks\BasicTasks\SleepTask.cs" />
+    <Compile Include="Tasks\ComplexTasks\AbstractSequentialTask.cs" />
+    <Compile Include="Tasks\ComplexTasks\DiagnoseTask.cs" />
+    <Compile Include="Tasks\ComplexTasks\ShutdownTask.cs" />
+    <Compile Include="Tasks\ComplexTasks\StartupTask.cs" />
     <Compile Include="ThirdParty\MonitorChanger.cs" />
     <Compile Include="ThirdParty\ServiceHelpers.cs" />
     <Compile Include="TasksProcessor.cs" />
-    <Compile Include="Tasks\AbstractDevicesTask.cs" />
-    <Compile Include="Tasks\AbstractServiceTask.cs" />
-    <Compile Include="Tasks\DisableAmdVideoTask.cs" />
-    <Compile Include="Tasks\DisableVirtualVideoTask.cs" />
-    <Compile Include="Tasks\EnableAmdVideoTask.cs" />
-    <Compile Include="Tasks\EnableVirtualVideoTask.cs" />
+    <Compile Include="Tasks\BasicTasks\AbstractDevicesTask.cs" />
+    <Compile Include="Tasks\BasicTasks\AbstractServiceTask.cs" />
+    <Compile Include="Tasks\BasicTasks\DisableAmdVideoTask.cs" />
+    <Compile Include="Tasks\BasicTasks\DisableVirtualVideoTask.cs" />
+    <Compile Include="Tasks\BasicTasks\EnableAmdVideoTask.cs" />
+    <Compile Include="Tasks\BasicTasks\EnableVirtualVideoTask.cs" />
     <Compile Include="Tasks\ITask.cs" />
-    <Compile Include="Tasks\StopAudioServiceTask.cs" />
+    <Compile Include="Tasks\BasicTasks\StopAudioServiceTask.cs" />
     <Compile Include="ThirdParty\DisableDevice.cs" />
     <Compile Include="Devices\DeviceHelper.cs" />
     <Compile Include="ThirdParty\ServicePreshutdownHelpers.cs" />
@@ -131,6 +135,7 @@
     <Analyzer Include="..\packages\Microsoft.NetFramework.Analyzers.2.9.8\analyzers\dotnet\cs\Microsoft.NetFramework.Analyzers.dll" />
     <Analyzer Include="..\packages\Microsoft.NetFramework.Analyzers.2.9.8\analyzers\dotnet\cs\Microsoft.NetFramework.CSharp.Analyzers.dll" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

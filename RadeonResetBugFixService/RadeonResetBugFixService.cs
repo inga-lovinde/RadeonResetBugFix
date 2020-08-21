@@ -4,6 +4,7 @@
     using System.Reflection;
     using System.ServiceProcess;
     using Microsoft.Win32;
+    using Tasks.ComplexTasks;
 
     public partial class RadeonResetBugFixService : ServiceBase
     {
@@ -35,38 +36,22 @@
             deferredStopMethodInfo.Invoke(this, null);
         }
 
-        private void Process(string reason, Action<string> handle)
-        {
-            this.Handler.HandleLog($"{reason} initiated");
-            try
-            {
-                handle(reason);
-                this.Handler.HandleLog($"{reason} successfully finished");
-            }
-            catch (Exception e)
-            {
-                this.Handler.HandleLog($"{reason} error: {e}");
-            }
-        }
-
         protected override void OnShutdown()
         {
-            this.Process(
+            this.Handler.HandleEntryPoint(
                 "ServiceBase.OnShutdown",
-                (string reason) =>
-                {
-                    this.CallStop();
-                });
+                (logger) => this.CallStop()
+            );
         }
 
         protected override void OnStart(string[] args)
         {
-            this.Process(
+            this.Handler.HandleEntryPoint(
                 "ServiceBase.OnStart",
-                (string reason) =>
+                (logger) =>
                 {
                     this.RequestAdditionalTime((int)Constants.ServiceTimeout.TotalMilliseconds);
-                    this.Handler.HandleStartup(reason);
+                    TasksProcessor.ProcessTask(logger, new StartupTask());
                     this.EnablePreshutdown();
                     SystemEvents.SessionEnding += this.OnSessionEnding;
                 });
@@ -74,12 +59,12 @@
 
         protected override void OnStop()
         {
-            this.Process(
+            this.Handler.HandleEntryPoint(
                 "ServiceBase.OnStop",
-                (string reason) =>
+                (logger) =>
                 {
                     this.RequestAdditionalTime((int)Constants.ServiceTimeout.TotalMilliseconds);
-                    this.Handler.HandleShutdown(reason);
+                    TasksProcessor.ProcessTask(logger, new ShutdownTask());
                     SystemEvents.SessionEnding -= this.OnSessionEnding;
                 });
         }
@@ -88,33 +73,33 @@
         {
             const int SERVICE_CONTROL_PRESHUTDOWN = 0xf;
 
-            this.Process(
+            this.Handler.HandleEntryPoint(
                 "ServiceBase.OnCustomCommand",
-                (string reason) =>
+                (logger) =>
                 {
                     if (command == SERVICE_CONTROL_PRESHUTDOWN)
                     {
-                        this.Handler.HandleLog($"Custom command: preshutdown");
+                        logger.Log("Custom command: preshutdown");
                         this.CallStop();
                     }
                     else
                     {
-                        this.Handler.HandleLog($"Unknown custom command: {command}");
+                        logger.Log("Unknown custom command: {command}");
                     }
                 });
         }
 
         private void OnSessionEnding(object sender, SessionEndingEventArgs args)
         {
-            this.Process(
+            this.Handler.HandleEntryPoint(
                 "SystemEvents.OnSessionEnding",
-                (string reason) =>
+                (logger) =>
                 {
-                    this.Handler.HandleLog($"Session end reason: ${args.Reason}");
+                    logger.Log($"Session end reason: ${args.Reason}");
 
                     if (args.Reason == SessionEndReasons.SystemShutdown)
                     {
-                        this.Handler.HandleShutdown(reason);
+                        TasksProcessor.ProcessTask(logger, new ShutdownTask());
                     }
                 });
         }

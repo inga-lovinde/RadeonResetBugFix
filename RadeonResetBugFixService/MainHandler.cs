@@ -24,97 +24,17 @@
                 $"radeonfix_{date:yyyyMMdd}_{date:HHmmss}.log");
         }
 
-        public void HandleLog(string message)
-        {
-            using (ILogger fileLogger = new FileLogger(this.LogFilename))
-            {
-                fileLogger.Log(message);
-            }
-        }
-
-        public void HandleStartup(string reason)
+        public void HandleEntryPoint(string name, Action<ILogger> handle)
         {
             using (var fileLogger = new FileLogger(this.LogFilename))
             {
-                using (ILogger logger = new TaskLoggerWrapper(fileLogger, "Startup"))
+                using (ILogger logger = new TaskLoggerWrapper(fileLogger, name))
                 {
-                    logger.Log($"Reason: {reason}");
                     try
                     {
                         lock (this.Mutex)
                         {
-                            TasksProcessor.ProcessTasks(
-                                logger,
-                                new ITask[]
-                                {
-                                    new EnableBasicDisplayStartupTask(),
-                                    new SleepTask(TimeSpan.FromSeconds(40)),
-                                    new EnableAmdVideoTask(this.StartupDevicesStatus),
-                                    new DisableVirtualVideoTask(this.StartupDevicesStatus),
-                                    new SleepTask(TimeSpan.FromSeconds(20)),
-                                    new FixMonitorTask(),
-                                    new DisableVirtualVideoTask(this.StartupDevicesStatus),
-                                    new FixMonitorTask(),
-                                });
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        logger.LogError(e.ToString());
-                    }
-                }
-            }
-        }
-
-        public void HandleShutdown(string reason)
-        {
-            using (var fileLogger = new FileLogger(this.LogFilename))
-            {
-                using (ILogger logger = new TaskLoggerWrapper(fileLogger, "Shutdown"))
-                {
-                    logger.Log($"Reason: {reason}");
-                    try
-                    {
-                        lock (this.Mutex)
-                        {
-                            TasksProcessor.ProcessTasks(
-                                logger,
-                                new ITask[]
-                                {
-                                    new StopAudioServiceTask(),
-                                    new EnableVirtualVideoTask(this.ShutdownDevicesStatus),
-                                    new DisableAmdVideoTask(this.ShutdownDevicesStatus),
-                                    new LastResortDevicesRestoreTask(this.StartupDevicesStatus),
-                                    new LastResortDevicesRestoreTask(this.StartupDevicesStatus), // just in case
-                                    new DisableBasicDisplayStartupTask(this.StartupDevicesStatus),
-                                });
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        logger.LogError(e.ToString());
-                    }
-                }
-            }
-        }
-
-        public void HandleDiagnose(string reason)
-        {
-            using (var fileLogger = new FileLogger(this.LogFilename))
-            {
-                using (ILogger logger = new TaskLoggerWrapper(fileLogger, "Diagnose"))
-                {
-                    logger.Log($"Reason: {reason}");
-                    try
-                    {
-                        lock (this.Mutex)
-                        {
-                            TasksProcessor.ProcessTasks(
-                                logger,
-                                new ITask[]
-                                {
-                                    new ListDevicesTask(),
-                                });
+                            handle(logger);
                         }
                     }
                     catch (Exception e)

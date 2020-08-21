@@ -1,4 +1,4 @@
-﻿namespace RadeonResetBugFixService.Tasks
+﻿namespace RadeonResetBugFixService.Tasks.BasicTasks
 {
     using System.Linq;
     using Contracts;

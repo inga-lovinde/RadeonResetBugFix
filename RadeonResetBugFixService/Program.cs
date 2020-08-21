@@ -2,6 +2,7 @@
 {
     using System;
     using System.ServiceProcess;
+    using Tasks.ComplexTasks;
     using ThirdParty.ServiceHelpers;
 
     public static class Program
@@ -133,19 +134,19 @@
             DoInstall();
         }
 
-        private static void DoStartup()
-        {
-            new MainHandler().HandleStartup("Program.DoStartup");
-        }
+        private static void DoStartup() => new MainHandler().HandleEntryPoint(
+            "Program.DoStartup",
+            (logger) => TasksProcessor.ProcessTask(logger, new StartupTask())
+        );
 
-        private static void DoShutdown()
-        {
-            new MainHandler().HandleShutdown("Program.DoShutdown");
-        }
+        private static void DoShutdown() => new MainHandler().HandleEntryPoint(
+            "Program.DoShutdown",
+            (logger) => TasksProcessor.ProcessTask(logger, new ShutdownTask())
+        );
 
-        private static void DoDiagnose()
-        {
-            new MainHandler().HandleDiagnose("Program.DoDiagnose");
-        }
+        private static void DoDiagnose() => new MainHandler().HandleEntryPoint(
+            "Program.DoDiagnose",
+            (logger) => TasksProcessor.ProcessTask(logger, new DiagnoseTask())
+        );
     }
 }
