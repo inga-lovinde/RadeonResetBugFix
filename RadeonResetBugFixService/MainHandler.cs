@@ -30,6 +30,8 @@
             {
                 using (ILogger logger = new TaskLoggerWrapper(fileLogger, name))
                 {
+                    logger.Log($"Build date: {EnvironmentHelper.GetServiceBuildDate()}");
+
                     try
                     {
                         lock (this.Mutex)

@@ -52,6 +52,8 @@
 
         private static void MainConsole(string[] args)
         {
+            Console.WriteLine($"Build date: {EnvironmentHelper.GetServiceBuildDate()}");
+
             var command = args.Length == 1 ? args[0] : string.Empty;
 
             if (command.Equals("install", StringComparison.OrdinalIgnoreCase)) {

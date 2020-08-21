@@ -1,6 +1,7 @@
 ﻿namespace RadeonResetBugFixService
 {
     using System;
+    using System.Reflection;
     using System.Runtime.InteropServices;
     using System.Security.Principal;
 
@@ -35,5 +36,14 @@
         public static bool IsWindows8OrNewer() => IsWindows() && Environment.OSVersion.Version >= Windows8Version;
 
         public static bool IsVistaOrNewer() => IsWindows() && Environment.OSVersion.Version >= VistaVersion;
+
+        // Code taken from https://stackoverflow.com/a/826850
+        public static DateTime GetServiceBuildDate()
+        {
+            var version = Assembly.GetExecutingAssembly().GetName().Version;
+            return new DateTime(2000, 1, 1, 0, 0, 0, DateTimeKind.Unspecified)
+                .AddDays(version.Build)
+                .AddSeconds(version.Revision * 2);
+        }
     }
 }

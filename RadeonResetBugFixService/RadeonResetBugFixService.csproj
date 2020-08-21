@@ -16,7 +16,7 @@
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <Deterministic>true</Deterministic>
+    <Deterministic>false</Deterministic>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
   </PropertyGroup>
@@ -51,63 +51,63 @@
     <Reference Include="System" />
     <Reference Include="System.Configuration.Install" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Management" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Management" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.ServiceProcess" />
     <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Devices\DeviceHelper.cs" />
     <Compile Include="EnvironmentHelper.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Contracts\DeviceInfo.cs" />
     <Compile Include="Contracts\DevicesStatus.cs" />
+    <Compile Include="Contracts\ILogger.cs" />
     <Compile Include="Devices\KnownDevices.cs" />
     <Compile Include="Logging\FileLogger.cs" />
-    <Compile Include="Contracts\ILogger.cs" />
+    <Compile Include="Logging\TaskLoggerWrapper.cs" />
     <Compile Include="MainHandler.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="ProjectInstaller.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="ProjectInstaller.Designer.cs">
       <DependentUpon>ProjectInstaller.cs</DependentUpon>
     </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RadeonResetBugFixService.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="RadeonResetBugFixService.Designer.cs">
       <DependentUpon>RadeonResetBugFixService.cs</DependentUpon>
     </Compile>
-    <Compile Include="Program.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Logging\TaskLoggerWrapper.cs" />
     <Compile Include="RegistryHelper.cs" />
+    <Compile Include="Tasks\ITask.cs" />
+    <Compile Include="Tasks\BasicTasks\AbstractDevicesTask.cs" />
+    <Compile Include="Tasks\BasicTasks\AbstractServiceTask.cs" />
+    <Compile Include="Tasks\BasicTasks\DisableAmdVideoTask.cs" />
     <Compile Include="Tasks\BasicTasks\DisableBasicDisplayStartupTask.cs" />
+    <Compile Include="Tasks\BasicTasks\DisableVirtualVideoTask.cs" />
+    <Compile Include="Tasks\BasicTasks\EnableAmdVideoTask.cs" />
     <Compile Include="Tasks\BasicTasks\EnableBasicDisplayStartupTask.cs" />
+    <Compile Include="Tasks\BasicTasks\EnableVirtualVideoTask.cs" />
     <Compile Include="Tasks\BasicTasks\FixMonitorTask.cs" />
     <Compile Include="Tasks\BasicTasks\LastResortDevicesRestoreTask.cs" />
     <Compile Include="Tasks\BasicTasks\ListDevicesTask.cs" />
     <Compile Include="Tasks\BasicTasks\SleepTask.cs" />
+    <Compile Include="Tasks\BasicTasks\StopAudioServiceTask.cs" />
     <Compile Include="Tasks\ComplexTasks\AbstractSequentialTask.cs" />
     <Compile Include="Tasks\ComplexTasks\DiagnoseTask.cs" />
     <Compile Include="Tasks\ComplexTasks\ShutdownTask.cs" />
     <Compile Include="Tasks\ComplexTasks\StartupTask.cs" />
+    <Compile Include="TasksProcessor.cs" />
+    <Compile Include="ThirdParty\DisableDevice.cs" />
     <Compile Include="ThirdParty\MonitorChanger.cs" />
     <Compile Include="ThirdParty\ServiceHelpers.cs" />
-    <Compile Include="TasksProcessor.cs" />
-    <Compile Include="Tasks\BasicTasks\AbstractDevicesTask.cs" />
-    <Compile Include="Tasks\BasicTasks\AbstractServiceTask.cs" />
-    <Compile Include="Tasks\BasicTasks\DisableAmdVideoTask.cs" />
-    <Compile Include="Tasks\BasicTasks\DisableVirtualVideoTask.cs" />
-    <Compile Include="Tasks\BasicTasks\EnableAmdVideoTask.cs" />
-    <Compile Include="Tasks\BasicTasks\EnableVirtualVideoTask.cs" />
-    <Compile Include="Tasks\ITask.cs" />
-    <Compile Include="Tasks\BasicTasks\StopAudioServiceTask.cs" />
-    <Compile Include="ThirdParty\DisableDevice.cs" />
-    <Compile Include="Devices\DeviceHelper.cs" />
     <Compile Include="ThirdParty\ServicePreshutdownHelpers.cs" />
   </ItemGroup>
   <ItemGroup>
