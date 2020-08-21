@@ -6,20 +6,23 @@
 
     class ShutdownTask : AbstractSequentialTask
     {
-        private DevicesStatus ShutdownDevicesStatus { get; } = new DevicesStatus();
+        public ShutdownTask(ServiceContext context)
+        {
+            this.Context = context;
+        }
+
+        private ServiceContext Context { get; }
 
         public override string TaskName => "Shutdown";
 
         protected override ITask[] Subtasks => new ITask[]
         {
-            new EnableBasicDisplayStartupTask(),
-            new SleepTask(TimeSpan.FromSeconds(40)),
-            new EnableAmdVideoTask(this.ShutdownDevicesStatus),
-            new DisableVirtualVideoTask(this.ShutdownDevicesStatus),
-            new SleepTask(TimeSpan.FromSeconds(20)),
-            new FixMonitorTask(),
-            new DisableVirtualVideoTask(this.ShutdownDevicesStatus),
-            new FixMonitorTask()
+            new StopAudioServiceTask(),
+            new EnableVirtualVideoTask(this.Context.ShutdownDevicesStatus),
+            new DisableAmdVideoTask(this.Context.ShutdownDevicesStatus),
+            new LastResortDevicesRestoreTask(this.Context.StartupDevicesStatus),
+            new LastResortDevicesRestoreTask(this.Context.StartupDevicesStatus), // just in case
+            new DisableBasicDisplayStartupTask(this.Context.StartupDevicesStatus),
         };
     }
 }

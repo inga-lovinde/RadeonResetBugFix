@@ -6,7 +6,12 @@
 
     class StartupTask : AbstractSequentialTask
     {
-        private DevicesStatus StartupDevicesStatus { get; } = new DevicesStatus();
+        public StartupTask(ServiceContext context)
+        {
+            this.Context = context;
+        }
+
+        private ServiceContext Context { get; }
 
         public override string TaskName => "Startup";
 
@@ -14,11 +19,11 @@
         {
             new EnableBasicDisplayStartupTask(),
             new SleepTask(TimeSpan.FromSeconds(40)),
-            new EnableAmdVideoTask(this.StartupDevicesStatus),
-            new DisableVirtualVideoTask(this.StartupDevicesStatus),
+            new EnableAmdVideoTask(this.Context.StartupDevicesStatus),
+            new DisableVirtualVideoTask(this.Context.StartupDevicesStatus),
             new SleepTask(TimeSpan.FromSeconds(20)),
             new FixMonitorTask(),
-            new DisableVirtualVideoTask(this.StartupDevicesStatus),
+            new DisableVirtualVideoTask(this.Context.StartupDevicesStatus),
             new FixMonitorTask()
         };
     }

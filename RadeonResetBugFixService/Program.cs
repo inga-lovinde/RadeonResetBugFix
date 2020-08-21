@@ -2,6 +2,7 @@
 {
     using System;
     using System.ServiceProcess;
+    using Contracts;
     using Tasks.ComplexTasks;
     using ThirdParty.ServiceHelpers;
 
@@ -138,12 +139,12 @@
 
         private static void DoStartup() => new MainHandler().HandleEntryPoint(
             "Program.DoStartup",
-            (logger) => TasksProcessor.ProcessTask(logger, new StartupTask())
+            (logger) => TasksProcessor.ProcessTask(logger, new StartupTask(new ServiceContext()))
         );
 
         private static void DoShutdown() => new MainHandler().HandleEntryPoint(
             "Program.DoShutdown",
-            (logger) => TasksProcessor.ProcessTask(logger, new ShutdownTask())
+            (logger) => TasksProcessor.ProcessTask(logger, new ShutdownTask(new ServiceContext()))
         );
 
         private static void DoDiagnose() => new MainHandler().HandleEntryPoint(

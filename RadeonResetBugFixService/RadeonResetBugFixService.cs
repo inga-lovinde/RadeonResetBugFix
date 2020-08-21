@@ -4,10 +4,13 @@
     using System.Reflection;
     using System.ServiceProcess;
     using Microsoft.Win32;
+    using Contracts;
     using Tasks.ComplexTasks;
 
     public partial class RadeonResetBugFixService : ServiceBase
     {
+        private ServiceContext Context { get; } = new ServiceContext();
+
         private MainHandler Handler { get; } = new MainHandler();
 
         public RadeonResetBugFixService()
@@ -51,7 +54,7 @@
                 (logger) =>
                 {
                     this.RequestAdditionalTime((int)Constants.ServiceTimeout.TotalMilliseconds);
-                    TasksProcessor.ProcessTask(logger, new StartupTask());
+                    TasksProcessor.ProcessTask(logger, new StartupTask(this.Context));
                     this.EnablePreshutdown();
                     SystemEvents.SessionEnding += this.OnSessionEnding;
                 });
@@ -64,7 +67,7 @@
                 (logger) =>
                 {
                     this.RequestAdditionalTime((int)Constants.ServiceTimeout.TotalMilliseconds);
-                    TasksProcessor.ProcessTask(logger, new ShutdownTask());
+                    TasksProcessor.ProcessTask(logger, new ShutdownTask(this.Context));
                     SystemEvents.SessionEnding -= this.OnSessionEnding;
                 });
         }
@@ -99,7 +102,7 @@
 
                     if (args.Reason == SessionEndReasons.SystemShutdown)
                     {
-                        TasksProcessor.ProcessTask(logger, new ShutdownTask());
+                        TasksProcessor.ProcessTask(logger, new ShutdownTask(this.Context));
                     }
                 });
         }

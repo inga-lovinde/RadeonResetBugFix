@@ -61,6 +61,7 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Contracts\ServiceContext.cs" />
     <Compile Include="Devices\DeviceHelper.cs" />
     <Compile Include="EnvironmentHelper.cs" />
     <Compile Include="Constants.cs" />
