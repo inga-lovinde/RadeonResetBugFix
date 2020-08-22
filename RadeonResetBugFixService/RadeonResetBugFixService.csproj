@@ -87,7 +87,6 @@
       <DependentUpon>RadeonResetBugFixService.cs</DependentUpon>
     </Compile>
     <Compile Include="RegistryHelper.cs" />
-    <Compile Include="Tasks\ITask.cs" />
     <Compile Include="Tasks\BasicTasks\AbstractDevicesTask.cs" />
     <Compile Include="Tasks\BasicTasks\AbstractServiceTask.cs" />
     <Compile Include="Tasks\BasicTasks\DisableAmdVideoTask.cs" />
@@ -100,11 +99,13 @@
     <Compile Include="Tasks\BasicTasks\LastResortDevicesRestoreTask.cs" />
     <Compile Include="Tasks\BasicTasks\ListDevicesTask.cs" />
     <Compile Include="Tasks\BasicTasks\SleepTask.cs" />
+    <Compile Include="Tasks\BasicTasks\StartAudioServiceTask.cs" />
     <Compile Include="Tasks\BasicTasks\StopAudioServiceTask.cs" />
     <Compile Include="Tasks\ComplexTasks\AbstractSequentialTask.cs" />
     <Compile Include="Tasks\ComplexTasks\DiagnoseTask.cs" />
     <Compile Include="Tasks\ComplexTasks\ShutdownTask.cs" />
     <Compile Include="Tasks\ComplexTasks\StartupTask.cs" />
+    <Compile Include="Tasks\ITask.cs" />
     <Compile Include="TasksProcessor.cs" />
     <Compile Include="ThirdParty\DisableDevice.cs" />
     <Compile Include="ThirdParty\MonitorChanger.cs" />

@@ -22,6 +22,7 @@
             new DisableAmdVideoTask(this.Context.ShutdownDevicesStatus),
             new LastResortDevicesRestoreTask(this.Context.StartupDevicesStatus),
             new LastResortDevicesRestoreTask(this.Context.StartupDevicesStatus), // just in case
+            new StartAudioServiceTask(),
             new DisableBasicDisplayStartupTask(this.Context.StartupDevicesStatus),
         };
     }
