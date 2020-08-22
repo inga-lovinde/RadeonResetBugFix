@@ -21,21 +21,30 @@ With it, you will be able to use Radeon GPU as your only GPU,
 with your actual display connected to Radeon as a primary display,
 and reboot your VM without triggering AMD reset bug - even installing Windows updates!
 
+In effect, you can use VM with pass-through GPU plus pass-through keyboard and mouse
+as entirely separate PC.
+
 ## Limitations
 
-Currently this project is only tested with Hyper-V VMs,
-and probably also supports KVM and QEMU,
-but it should be trivial to add other hypervisors support
-(the relevant files are `Tasks\DisableVirtualVideoTask.cs` and `EnableVirtualVideoTask.cs`).
+Currently this project is only tested with Windows 10 VMs on Hyper-V,
+and was not tested with Windows 7 VMs, KVM, QEMU, VMWare and VirtualBox,
+although the preliminary support for these systems has been implemented
+and they should probably work too.
+
+Bug reports are welcome!
 
 **Note that you will still have to add a virtual GPU to your VM,
 otherwise Windows won't boot.**
 
-Note that it will add 1-5 minutes both to startup and to shutdown time.
+Note that it will add around 1 minute or up to 5 minutes in some cases to startup time,
+and a fraction of minute or up to several minutes in some cases to shutdown time.
 So don't panic if your screen is black immediately after VM startup,
 it is expected.
 
 ## Install instructions
+
+Make sure you have added an active virtual/synthetic GPU to your VM,
+and that you have installed all the relevant drivers / Guest Additions.
 
 Put `RadeonResetBugFixService.exe` in a permanent location.
 
@@ -72,20 +81,43 @@ RadeonResetBugFixService.exe uninstall
 ```
 
 The screen may go blank several times during the process.
-It may take up to 5 minutes total (but should take less than 2).
+It may take up to 5 minutes total (but should take several seconds).
 
-## Debugging
+## Debugging, bug reports
 
 The service stores its verbose log files in `logs` directory located next to the executable.
 
-## Frequent issues
+If the service does not work correctly on your system or does not solve the reset bug,
+please also run the diagnostics command
+(which will gather the detailed information about your hardware and will also write it to log):
+
+```
+RadeonResetBugFixService.exe diagnose
+```
+
+Attach to your bug report the diagnose log file plus the relevant recent service logs:
+one from the latest startup when you encountered a problem,
+and another one from the startup before that.
+
+## Known issues
 
 ### Connecting to VM from the Host
 
-This service disables Hyper-V video adapter,
-so you can no longer connect to VM using Basic sessions.
+This service disables virtual video adapter,
+so you can no longer connect to VM from a host, using Basic sessions.
+It will only work during startup / shutdown, but not during normal usage.
+If you connected to VM from a host during startup,
+the screen will go blank in a couple of minutes
+(as the display connected to Radeon GPU wil light up),
+that is expected.
 
-Enhanced sessions (which use RDP protocol) continue to work fine.
+That is one of the points of this service;
+otherwise, virtual display would always be present as primary or secondary display,
+even when you are not connected to VM from the host.
+
+Enhanced sessions in Hyper-V (which use RDP protocol) continue to work fine.
+Other hypervisors can miss the enhanced sessions feature,
+but you still can connect to VM using RDP.
 
 ### Unsuccessful reboots
 
